@@ -1,0 +1,13 @@
+name: fastapi
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - fastapi
+  - uvicorn
+  - pydantic
+  - snowflake-connector-python
+  - snowflake-snowpark-python
+
+prefix: /Users/xdebeaumont/anaconda3/envs/fastapi
