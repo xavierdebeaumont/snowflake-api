@@ -1,4 +1,4 @@
-name: pylab
+name: flaskapi
 channels:
   - defaults
 dependencies:
