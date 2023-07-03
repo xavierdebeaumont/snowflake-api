@@ -10,10 +10,6 @@ app.register_blueprint(snowpark, url_prefix='/snowpark')
 def default():
     return make_response(jsonify(result='Nothing to see here'))
 
-@app.route("/test")
-def tester():
-    return send_file("api_test.html")
-
 @app.errorhandler(404)
 def resource_not_found(e):
     return make_response(jsonify(error='Not found!'), 404)
