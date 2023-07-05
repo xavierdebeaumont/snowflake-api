@@ -16,6 +16,15 @@ connector = APIRouter()
 
 dateformat = '%Y-%m-%d'
 
+class CustomJSONResponse(JSONResponse):
+    def render(self, content):
+        # Serialize Decimal values
+        serialized_content = [
+            {key: str(value) if isinstance(value, Decimal) else value for key, value in item.items()}
+            for item in content
+        ]
+        return super().render(serialized_content)
+
 @connector.get('/customers/top10')
 async def customers_top10(start_range: str = Query(default='1995-01-01'), end_range: str = Query(default='1995-03-31')):
     # Validate arguments
@@ -33,7 +42,7 @@ async def customers_top10(start_range: str = Query(default='1995-01-01'), end_ra
         FROM snowflake_sample_data.tpch_sf10.orders
         WHERE o_orderdate >= '{sdt}'
           AND o_orderdate <= '{edt}'
-        GROUP BY o_custkey
+        GROUP BY o_custke
         ORDER BY sum_totalprice DESC
         LIMIT 10
     '''
@@ -42,11 +51,7 @@ async def customers_top10(start_range: str = Query(default='1995-01-01'), end_ra
         res = conn.cursor(DictCursor).execute(sql)
         result = res.fetchall()
         res.close()
-        serialized_data = [
-        {key: str(value) if isinstance(value, Decimal) else value for key, value in item.items()}
-        for item in result
-        ]
-        return JSONResponse(content=serialized_data)
+        return CustomJSONResponse(content=result)
     except:
         raise HTTPException(status_code=500, detail="Error reading from Snowflake. Check the logs for details.")
     
@@ -76,10 +81,6 @@ def clerk_montly_sales(clerkid, year):
         res = conn.cursor(DictCursor).execute(sql)
         result = res.fetchall()
         res.close()
-        serialized_data = [
-        {key: str(value) if isinstance(value, Decimal) else value for key, value in item.items()}
-        for item in result
-        ]
-        return JSONResponse(content=serialized_data)
+        return CustomJSONResponse(content=result)
     except:
         raise HTTPException(status_code=500, detail="Error reading from Snowflake. Check the logs for details.")

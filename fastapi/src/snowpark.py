@@ -16,6 +16,15 @@ snowpark = APIRouter()
 
 dateformat = '%Y-%m-%d'
 
+class CustomJSONResponse(JSONResponse):
+    def render(self, content):
+        # Serialize Decimal values
+        serialized_content = [
+            {key: str(value) if isinstance(value, Decimal) else value for key, value in item.items()}
+            for item in content
+        ]
+        return super().render(serialized_content)
+
 @snowpark.get('/customers/top10')
 async def customers_top10(start_range: str = Query(default='1995-01-01'), end_range: str = Query(default='1995-03-31')):
     # Validate arguments
@@ -34,11 +43,7 @@ async def customers_top10(start_range: str = Query(default='1995-01-01'), end_ra
                 .sort(f.col('SUM_TOTALPRICE').desc()) \
                 .limit(10)
         data = [x.as_dict() for x in df.to_local_iterator()]
-        serialized_data = [
-        {key: str(value) if isinstance(value, Decimal) else value for key, value in item.items()}
-        for item in data
-        ]
-        return JSONResponse(content=serialized_data)
+        return CustomJSONResponse(content=data)
     except:
         raise HTTPException(status_code=500, detail="Error reading from Snowflake. Check the logs for details.")
     
@@ -65,6 +70,6 @@ def clerk_montly_sales(clerkid, year):
         {key: str(value) if isinstance(value, Decimal) else value for key, value in item.items()}
         for item in data
         ]
-        return JSONResponse(content=serialized_data)
+        return CustomJSONResponse(content=serialized_data)
     except:
         raise HTTPException(status_code=500, detail="Error reading from Snowflake. Check the logs for details.")
