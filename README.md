@@ -1,7 +1,7 @@
 # snowflake-api
 
 ## Project
-In this project, the same API is made twice to with flask and FastAPI to serve data from snowflake.
+In this project, the same API is made twice to with flask and FastAPI to serve data from snowflake. The data is about business transaction. You can retreive the top 10 customers or the yearly sales by clerk.
 
 ## Built with
 
@@ -31,3 +31,4 @@ Launch the Flask API with :
 ```bash
 python3 app.py
 ```
+Execute all the query in snowflake_cleanup.sql to clean up the infrastructure.
